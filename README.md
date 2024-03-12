@@ -1,4 +1,4 @@
-# 1 Dataset Description
+# 1. Dataset Description
 
 -   The dataset Big Tech Stock Prices, which is upload tidytuesday repository on Feb 7th 2023, comes from Yahoo Finance via Kaggle (by Evan Gower). This dataset consists of the daily stock prices and volume of 14 different tech companies
 
@@ -35,3 +35,5 @@
 -   **Rich of samples** : This dataset not only meet all requirements of the project 1 (new, contain both numerical and categorical features) but also includes a large number (\~45,000) of samples for stock prices which can generalize the distribution of features. Moreover, we can also learn about data preprocessing through this dataset because that number of samples might requires some modification for better visualization.
 -   **Interesting pattern in stock price**: Because stock price is famous for its fluctuation, visualizing this dataset may help us acknowledge many interesting patterns as well as rules in stock price change.
 -   **This dataset can be used for multiple purposes**: We agree that there are many application of this dataset, for example, used for **predictive machine learning model projects**. It means that the knowledge of this dataset is not limited in this project, so that it has a wider functionality.
+
+## 3. 
