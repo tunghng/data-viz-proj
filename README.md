@@ -90,3 +90,10 @@ The dataset is highly valuable for several reasons:
 - **Analysis Plan**:
   1. Filter for companies from the start of the pandemic.
   2. Normalize stock prices
+  3. Calculate the time it took for each company to recover to pre-pandemic stock prices.
+  4. Plot a line chart to compare the recovery and growth post-pandemic.
+  5. Merge external data to add context to the recovery period.
+  6. Annotate the chart to highlight significant recovery milestones and phases of growth.
+
+
+
