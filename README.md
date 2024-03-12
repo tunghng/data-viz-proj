@@ -1,4 +1,4 @@
-# 1. Dataset Description
+## 1. Dataset Description
 
 -   The dataset Big Tech Stock Prices, which is upload tidytuesday repository on Feb 7th 2023, comes from Yahoo Finance via Kaggle (by Evan Gower). This dataset consists of the daily stock prices and volume of 14 different tech companies
 
@@ -37,3 +37,11 @@
 -   **This dataset can be used for multiple purposes**: We agree that there are many application of this dataset, for example, used for **predictive machine learning model projects**. It means that the knowledge of this dataset is not limited in this project, so that it has a wider functionality.
 
 ## 3. 
+
+- **Detailed Trend Analysis for Individual Companies** :  How has each company's stock price trended over a specific period (e.g., the past decade), and how do these trends vary among companies like Apple Inc. (AAPL), Amazon.com, Inc. (AMZN), and Microsoft Corp. (MSFT)?
+
+  Why: This question allows us to dive deep into the performance of individual tech giants, uncovering how product launches, global events, and market trends have impacted their stock prices over time. It provides a historical perspective that can be crucial for understanding future potential.
+
+- **Comparative Growth Analysis Since a Key Historical Event** : Since a significant market event (e.g., the COVID-19 pandemic outbreak in early 2020), how have the stock prices of these tech giants recovered and grown, and how does their recovery and growth compare?
+
+Why: This question is particularly relevant given the recent global events that have significantly impacted markets. It provides insight into the resilience and growth potential of big tech companies in the face of adversity, offering a comparative analysis of how different companies withstand and thrive following market shocks.
