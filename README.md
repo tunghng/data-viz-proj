@@ -1,47 +1,92 @@
-## 1. Dataset Description
+# Big Tech Stock Prices Dataset Overview
 
--   The dataset Big Tech Stock Prices, which is upload tidytuesday repository on Feb 7th 2023, comes from Yahoo Finance via Kaggle (by Evan Gower). This dataset consists of the daily stock prices and volume of 14 different tech companies
+## Dataset Description
+
+The dataset, named **Big Tech Stock Prices**, was uploaded to the TidyTuesday repository on February 7th, 2023. It is sourced from Yahoo Finance via Kaggle, courtesy of Evan Gower. This dataset comprises daily stock prices and volume for 14 different tech companies.
 
 ## Data Dictionary
 
--   There are 2 main csv file:
+There are 2 main CSV files in this dataset:
 
 ### `big_tech_stock_prices.csv`
 
--   The file includes 15 samples mapping between stock symbol and companies' names
+This file contains 15 samples mapping between stock symbol and companies' names, with the following variables:
 
-| variable     | class     | description                                                                                                                                                                                                                       |
-|:-------------------------|:-------------------|:-------------------------|
-| stock_symbol | character | stock_symbol                                                                                                                                                                                                                      |
-| date         | double    | date                                                                                                                                                                                                                              |
-| open         | double    | The price at market open.                                                                                                                                                                                                         |
-| high         | double    | The highest price for that day.                                                                                                                                                                                                   |
-| low          | double    | The lowest price for that day.                                                                                                                                                                                                    |
-| close        | double    | The price at market close, adjusted for splits.                                                                                                                                                                                   |
-| adj_close    | double    | The closing price after adjustments for all applicable splits and dividend distributions. Data is adjusted using appropriate split and dividend multipliers, adhering to Center for Research in Security Prices (CRSP) standards. |
-| volume       | double    | The number of shares traded on that day.                                                                                                                                                                                          |
+| Variable    | Class     | Description                                                                                                                                                                                                                        |
+|-------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| stock_symbol| character | The stock symbol of the company.                                                                                                                                                                                                   |
+| date        | double    | The date on which the stock data was recorded.                                                                                                                                                                                     |
+| open        | double    | The price of the stock at the market open.                                                                                                                                                                                         |
+| high        | double    | The highest price of the stock on that day.                                                                                                                                                                                        |
+| low         | double    | The lowest price of the stock on that day.                                                                                                                                                                                         |
+| close       | double    | The closing price of the stock, adjusted for splits.                                                                                                                                                                               |
+| adj_close   | double    | The closing price after adjustments for splits and dividend distributions, adhering to CRSP standards.                                                                                                                              |
+| volume      | double    | The number of shares traded on that day.                                                                                                                                                                                           |
 
 ### `big_tech_companies.csv`
 
--   The file includes 45,089 samples (3721 for each company except Tesla and Meta because they were not publicly traded for part of the period examined) containing details of stock prices ( open price, close price, etc.)
+This file contains 45,089 samples, detailing stock prices (open price, close price, etc.) for each company, except for Tesla and Meta, which were not publicly traded for part of the period examined.
 
-| variable     | class     | description               |
-|:-------------|:----------|:--------------------------|
-| stock_symbol | character | stock_symbol              |
-| company      | character | Full name of the company. |
+| Variable    | Class     | Description                  |
+|-------------|-----------|------------------------------|
+| stock_symbol| character | The stock symbol of the company. |
+| company     | character | The full name of the company.    |
 
-## 2. Motivation
+## Motivation
 
--   **Rich of samples** : This dataset not only meet all requirements of the project 1 (new, contain both numerical and categorical features) but also includes a large number (\~45,000) of samples for stock prices which can generalize the distribution of features. Moreover, we can also learn about data preprocessing through this dataset because that number of samples might requires some modification for better visualization.
--   **Interesting pattern in stock price**: Because stock price is famous for its fluctuation, visualizing this dataset may help us acknowledge many interesting patterns as well as rules in stock price change.
--   **This dataset can be used for multiple purposes**: We agree that there are many application of this dataset, for example, used for **predictive machine learning model projects**. It means that the knowledge of this dataset is not limited in this project, so that it has a wider functionality.
+The dataset is highly valuable for several reasons:
 
-## 3. 
+- **Richness of Samples**: With approximately 45,000 samples, it meets all the requirements for project 1 (being new, containing both numerical and categorical features), and can generalize the distribution of features. It also offers insights into data preprocessing due to the large number of samples.
+- **Interesting Patterns in Stock Prices**: Given the fluctuating nature of stock prices, visualizing this dataset can reveal patterns and rules in stock price changes.
+- **Multiple Purposes**: This dataset has broad applications, such as predictive machine learning models, making it a versatile resource beyond just this project.
 
-- **Detailed Trend Analysis for Individual Companies** :  How has each company's stock price trended over a specific period (e.g., the past decade), and how do these trends vary among companies like Apple Inc. (AAPL), Amazon.com, Inc. (AMZN), and Microsoft Corp. (MSFT)?
+## Questions to Answer
 
-  Why: This question allows us to dive deep into the performance of individual tech giants, uncovering how product launches, global events, and market trends have impacted their stock prices over time. It provides a historical perspective that can be crucial for understanding future potential.
+### Detailed Trend Analysis for Individual Companies
 
-- **Comparative Growth Analysis Since a Key Historical Event** : Since a significant market event (e.g., the COVID-19 pandemic outbreak in early 2020), how have the stock prices of these tech giants recovered and grown, and how does their recovery and growth compare?
+**Question**: How have the stock prices of individual companies like Apple Inc. (AAPL), Amazon.com, Inc. (AMZN), and Microsoft Corp. (MSFT) trended over specific periods (e.g., the past decade)?
 
-Why: This question is particularly relevant given the recent global events that have significantly impacted markets. It provides insight into the resilience and growth potential of big tech companies in the face of adversity, offering a comparative analysis of how different companies withstand and thrive following market shocks.
+**Why**: This analysis offers insights into the performance of these tech giants, how product launches and global events have influenced their stock prices, and provides a historical perspective essential for predicting future trends.
+
+**Plan for Question 1**:
+
+- **Variables Involved**:
+  - `stock_symbol` (character): To filter data for companies of interest.
+  - `date`, `close`, `volume` (double): For selecting date ranges and analyzing closing prices and trade volume.
+
+- **Variables to be Created**:
+  - `percent_change`: To show daily or periodical stock price changes.
+  - `moving_average`: For smoothing out short-term fluctuations.
+
+- **External Data**:
+  - Key event dates for each company.
+  - Historical market indices for comparative performance.
+
+- **Analysis Plan**:
+  1. Filter data for targeted companies and date ranges.
+  2. Create time-series data for closing prices.
+  3. Calculate additional variables like percent changes.
+  4. Merge key event dates and market indices.
+  5. Use charts to visualize trends.
+
+### Comparative Growth Analysis Since a Key Historical Event
+
+**Question**: How have the stock prices of tech giants recovered and grown since the COVID-19 pandemic outbreak, and how do their recoveries compare?
+
+**Why**: This analysis is pertinent due to the significant impact of recent global events on markets, providing insights into the resilience and growth potential of big tech companies.
+
+**Plan for Question 2**:
+
+- **Variables Involved**:
+  - `stock_symbol`, `date`, `close` (double): For identifying companies and analyzing closing prices post-pandemic.
+
+- **Variables to be Created**:
+  - `indexed_price`: For direct comparison of stock prices indexed at the pandemic's start.
+  - `time_to_recovery`: To measure the time for stock prices to return to pre-pandemic levels.
+
+- **External Data**:
+  - Major economic indicators and policy change dates.
+
+- **Analysis Plan**:
+  1. Filter for companies from the start of the pandemic.
+  2. Normalize stock prices
