@@ -25,7 +25,7 @@ This file contains detailed daily stock prices (open price, close price, etc.) f
 
 ### `big_tech_companies.csv`
 
-This file maps the stock symbols to company names and contains 14 samples, one for each company included in the study.
+This file maps the stock symbols to company names and contains 14 samples, one for each company included in the study. The file includes 45,089 samples (3721 for each company except Tesla and Meta because they were not publicly traded for part of the period examined, however, those missing samples' influences are not significant because the other are still contiguous and experimentable ). 
 
 | Variable    | Class     | Description                  |
 |-------------|-----------|------------------------------|
