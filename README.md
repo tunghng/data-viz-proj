@@ -91,7 +91,7 @@ The dataset is highly valuable for several reasons:
   2. Normalize stock prices
   3. Calculate the time it took for each company to recover to pre-pandemic stock prices.
   4. Plot an area chart with negative indexes to compare the recovery and growth post-pandemic. Charts would be similar to the chart in the following picture.
-  ![Example Chart]("recovery_chart.png")
+  ![Example Chart](recovery_chart.png)
   5. Merge external data to add context to the recovery period.
   6. Annotate the chart to highlight significant recovery milestones and phases of growth.
 
