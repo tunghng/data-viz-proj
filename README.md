@@ -10,7 +10,7 @@ There are 2 main CSV files in this dataset:
 
 ### `big_tech_stock_prices.csv`
 
-This file contains 15 samples mapping between stock symbol and companies' names, with the following variables:
+This file contains detailed daily stock prices (open price, close price, etc.) for each of the 14 companies across several years, with the following variables:
 
 | Variable    | Class     | Description                                                                                                                                                                                                                        |
 |-------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -25,7 +25,7 @@ This file contains 15 samples mapping between stock symbol and companies' names,
 
 ### `big_tech_companies.csv`
 
-This file contains 45,089 samples, detailing stock prices (open price, close price, etc.) for each company, except for Tesla and Meta, which were not publicly traded for part of the period examined.
+This file maps the stock symbols to company names and contains 14 samples, one for each company included in the study.
 
 | Variable    | Class     | Description                  |
 |-------------|-----------|------------------------------|
@@ -55,8 +55,8 @@ The dataset is highly valuable for several reasons:
   - `date`, `close`, `volume` (double): For selecting date ranges and analyzing closing prices and trade volume.
 
 - **Variables to be Created**:
-  - `percent_change`: To show daily or periodical stock price changes.
-  - `moving_average`: For smoothing out short-term fluctuations.
+  percent_change: Calculated as ((current_price - previous_price) / previous_price) * 100. This metric helps in identifying daily volatility and trends.
+
 
 - **External Data**:
   - Key event dates for each company.
@@ -81,8 +81,7 @@ The dataset is highly valuable for several reasons:
   - `stock_symbol`, `date`, `close` (double): For identifying companies and analyzing closing prices post-pandemic.
 
 - **Variables to be Created**:
-  - `indexed_price`: For direct comparison of stock prices indexed at the pandemic's start.
-  - `time_to_recovery`: To measure the time for stock prices to return to pre-pandemic levels.
+  indexed_price: Calculated by setting the stock price on the first day of the pandemic as the base (index 100) and then calculating each subsequent day's price as a percentage of this base value. This enables a direct comparison of stock prices indexed at the pandemic's start.
 
 - **External Data**:
   - Major economic indicators and policy change dates.
