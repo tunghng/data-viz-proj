@@ -67,7 +67,7 @@ The dataset is highly valuable for several reasons:
   2. Create time-series data for closing prices.
   3. Calculate additional variables like percent changes.
   4. Merge key event dates and market indices.
-  5. Use charts to visualize trends.
+  5. Use charts to visualize trends. Use suitable charts such as line chart or candle stick to illustrate the stock trends.
 
 ### Comparative Growth Analysis Since a Key Historical Event
 
@@ -84,13 +84,14 @@ The dataset is highly valuable for several reasons:
   indexed_price: Calculated by setting the stock price on the first day of the pandemic as the base (index 100) and then calculating each subsequent day's price as a percentage of this base value. This enables a direct comparison of stock prices indexed at the pandemic's start.
 
 - **External Data**:
-  - Major economic indicators and policy change dates.
+  - Major economic indicators and policy change dates. To be specific, we are thinking of adding the GDP of the whole country to compare with the companies.
 
 - **Analysis Plan**:
   1. Filter for companies from the start of the pandemic.
   2. Normalize stock prices
   3. Calculate the time it took for each company to recover to pre-pandemic stock prices.
-  4. Plot a line chart to compare the recovery and growth post-pandemic.
+  4. Plot an area chart with negative indexes to compare the recovery and growth post-pandemic. Charts would be similar to the chart in the following picture.
+  ![Example Chart](img/recovery_chart.png")
   5. Merge external data to add context to the recovery period.
   6. Annotate the chart to highlight significant recovery milestones and phases of growth.
 
