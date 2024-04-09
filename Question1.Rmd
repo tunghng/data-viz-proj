@@ -1,8 +1,8 @@
 ---
 title: "3 Significant Stocks"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -15,8 +15,12 @@ library(ggplot2)
 library(tidyquant)
 #install.packages("lubridate")
 library(lubridate)
-#install.packages("quantmod")
-library(quantmod)
+#install.packages("plotly")
+library(plotly)
+#install.packages("gganimate")
+library(gganimate)
+#install.packages("gifski")
+library(gifski)
 ```
 
 ## Choose Stock to Analyze Based on Volume Traded
@@ -32,7 +36,67 @@ data <- read.csv(file_path)
 head(data)
 
 ```
+```{r}
 
+stock_data <- data
+
+# Convert the 'date' column to an actual Date type if it's not already
+stock_data$date <- as.Date(stock_data$date)
+
+# Extract year from date
+stock_data$year <- format(stock_data$date, "%Y")
+
+# Group data by stock_symbol and year, and then summarize
+annual_stock_summary <- stock_data %>%
+  group_by(stock_symbol, year) %>%
+  summarise(
+    average_high = mean(high, na.rm = TRUE),
+    average_low = mean(low, na.rm = TRUE),
+    average_open = mean(open, na.rm = TRUE),
+    average_close = mean(close, na.rm = TRUE),
+    total_vol = sum(volume, na.rm = TRUE)
+  ) %>%
+  ungroup() 
+
+```
+```{r}
+annual_stock_summary$year <- as.integer(annual_stock_summary$year)
+
+p <- ggplot(
+  annual_stock_summary, 
+  aes(x = average_high, y=average_high, size = total_vol, colour = stock_symbol)
+  ) +
+  geom_point(show.legend = c(size = FALSE, color = TRUE), alpha = 0.7) +
+  scale_color_viridis_d(option = "D") +
+  scale_size(range = c(1, 28)) +
+  scale_x_log10() +
+  labs(x = "Average High", 
+    y = "Average Low", 
+    title = "Average High vs. Low Stock Prices for Big Tech Companies",
+    subtitle = "Size based on total traded volume",
+    legend = "Stock Symbol") +
+  theme_minimal() + 
+  theme(legend.position = "right")
+p
+```
+
+```{r}
+
+p <- p +
+  transition_time(year) + 
+  labs(x = "Average High", 
+    y = "Average Low", 
+    title = "Average High vs. Low Stock Prices for Big Tech Companies in {frame_time}",
+    subtitle = "Size based on total traded volume",
+    legend = "Stock Symbol") + 
+  theme(legend.position = "right")
+animation <- animate(p, nframes = 14, fps = 3, width = 600, height = 400, renderer = gifski_renderer())
+
+# Save the animation to a file
+anim_save("img/stock_over_time_animation.gif", animation = animation)
+
+```
+![](img/stock_over_time_animation.gif)
 ```{r}
 # Summing up the volume for each stock
 volume_sum <- data %>%
@@ -47,11 +111,9 @@ print(volume_sum)
 ```{r}
 # Get the top 3 stock symbols
 top_3_stocks <- head(volume_sum$stock_symbol, 3)
-bottom_3_stocks <- tail(volume_sum$stock_symbol, 3)
 
 # Print the top 3 stock symbols
 print(top_3_stocks)
-print(bottom_3_stocks)
 ```
 
 ```{r}
@@ -73,11 +135,32 @@ for (stock in top_3_stocks) {
 }
 ```
 
+```{r}
+# Loop through each top stock and save its data to a CSV file
+for (stock in bottom_3_stocks) {
+  stock_data <- data %>%
+    filter(stock_symbol == stock) %>%
+    select(-stock_symbol)
+  
+  # Construct file name and path
+  file_name <- paste0(stock, "_stock_data.csv")
+  file_path <- file.path("data/customed", file_name) # Replace with your actual directory path
+  
+  # Save to CSV
+  write.csv(stock_data, file_path, row.names = FALSE)
+  
+  # Print out file path for confirmation
+  print(paste0("Data for ", stock, " saved to: ", file_path))
+}
+```
+
+
+
 ## AAPL Stock Analysis
 
 ```{r}
 # Load AAPL stock data
-aapl_data <- read.csv("data/customed/AAPL_stock_data.csv")
+aapl_data <- read.csv("data/customed/ADBE_stock_data.csv")
 
 # Convert date column to Date type
 aapl_data$date <- as.Date(aapl_data$date)
@@ -90,11 +173,6 @@ summary(aapl_data)
 sum(is.na(aapl_data))
 ```
 ### AAPL Adjusted Close Price Over Time
-```{r}
-#install.packages("plotly")
-library(plotly)
-
-```
 
 
 ```{r}
@@ -171,10 +249,10 @@ std_dev <- sd(aapl_data$daily_return, na.rm = TRUE)
 
 # Create a ggplot histogram
 p <- ggplot(aapl_data, aes(x = daily_return)) +
-  geom_histogram(binwidth = 0.1, fill = "darkblue", color = "white") +
-  geom_vline(xintercept = mean_return, color = "red", linetype = "dashed", size = 0.2) +
-  geom_vline(xintercept = mean_return + std_dev, color = "red", linetype = "solid", size = 0.2) +
-  geom_vline(xintercept = mean_return - std_dev, color = "red", linetype = "solid", size = 0.2) +
+  geom_histogram(binwidth = 0.1, fill = "darkblue", color = "darkblue") +
+  geom_vline(xintercept = mean_return, color = "red", linetype = "dashed", linewidth = 0.2) +
+  geom_vline(xintercept = mean_return + std_dev, color = "red", linetype = "solid", linewidth = 0.2) +
+  geom_vline(xintercept = mean_return - std_dev, color = "red", linetype = "solid", linewidth = 0.2) +
   labs(title = "Histogram of Daily Returns of AAPL Stock",
        x = "Daily Return (%)", y = "Frequency") +
   theme_minimal() 
@@ -187,7 +265,7 @@ fig <- ggplotly(p)
 fig <- fig %>% 
   
   layout(annotations = list(
-  list(x = mean_return - 1, y = 50, text = "Standard Deviation", showarrow = TRUE, arrowhead = 2, ax = -90)
+  list(x = mean_return - 1.5, y = 50, text = "Standard Deviation", showarrow = TRUE, arrowhead = 2, ax = -90)
 ))
 
 fig 
