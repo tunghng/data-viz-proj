@@ -4,8 +4,8 @@ output:
   html_document: default
   pdf_document: default
 ---
-
 ```{r setup, include=FALSE}
+# include neccessary packages
 knitr::opts_chunk$set(echo = TRUE)
 #install.packages("dplyr")
 library(dplyr)
@@ -23,18 +23,49 @@ library(gganimate)
 library(gifski)
 ```
 
+# Introduction 
+
+Financial data, especially stock data, is crucial to investors and analysts because it provides valuable insights into an industry’s performance and market trends. Effective data visualization can help these stakeholders regconize key patterns in stock performance, thus help them making more informed decisions and understand more about the market behaviour. For that reason, out team project attempt to effectively visualize financial data of mainly about big tech companies from the year 2010 to 2023. This project includes four main datasets, which we will briefly introduce:
+
+1. Big Tech Stock Stock Price: is the data we got from the following [link](https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-02-07/readme.md?fbclid=IwAR0tYp3YWBBJolVow9DS0khkzk4FFCjDRgktJuB5jpk5HbG-jTCykkfP378) in Github 
+
+```{r}
+path1 <- "data/big_tech_stock_prices.csv"
+dataset1 <- read.csv(path1)
+head(dataset1, 5)
+```
+2. COVID-19 Cases Datasets from Kaggle 
+[link](https://www.kaggle.com/datasets/imdevskp/corona-virus-report?fbclid=IwAR0XJC4wFfcmDVaTEioVdreQpUodmvTpoJlSVXykIM9oyQ46aYaMI1rbffA)
+
+```{r}
+dataset2 <- read.csv("data/day_wise.csv")
+head(dataset2, 5)
+```
+
+3. Walmart Stock Historical Data from Kaggle [link]([link](https://www.kaggle.com/datasets/namithadeshpande027/walmart-stock-historical-data?select=WMT.csv&fbclid=IwAR0TqcWKn4KY_1Sh7vmDWfAmFcyLKEE-LS55miSdsUY67Uou-BDQ660PY5A)
+
+```{r}
+dataset3 <- read.csv("data/WMT.csv")
+head(dataset3, 5)
+```
+
+4. Pfizer Stock Historical Prices from Kaggle 
+[link](https://finance.yahoo.com/quote/PFE/history?period1=1579651200&period2=1595808000&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true)
+
+```{r}
+
+dataset4 <- read.csv("data/pfizer.csv")
+head(dataset4, 5)
+```
+Both dataset 1, 3, and 4 are financial data about stock prices such as open price, close price, high price, low price, adjusted close price and volume of stock daily (with data column). As dataset 1 is just about big tech stock companies so we include dataset 3 and 4 which are about stock price of companies in different sectors for more wholistic view. We also integrated these financial datasets with dataset three about the COVID-19 cases to see how the pandemic have affect the companies. For more detailed view about the datasets, please view the head function of each dataset.
+
 ## Choose Stock to Analyze Based on Volume Traded
 
 ```{r}
 # Replace the path with the actual path to your CSV file
 file_path <- "data/big_tech_stock_prices.csv"
-
 # Read the CSV file into a data frame
 data <- read.csv(file_path)
-
-# View the first few rows of the data frame
-head(data)
-
 ```
 ```{r}
 
