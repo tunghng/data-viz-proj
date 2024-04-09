@@ -42,32 +42,35 @@ The dataset is highly valuable for several reasons:
 
 ## Questions to Answer
 
-### Detailed Trend Analysis for Individual Companies
+### Long-Term Investment Potential and Short-Term Risks of AAPL Stock
 
-**Question**: How have the stock prices of individual companies like Apple Inc. (AAPL), Amazon.com, Inc. (AMZN), and Microsoft Corp. (MSFT) trended over specific periods (e.g., the past decade)?
+**Question**: How do AAPL's historical price trends, daily returns, and trading volumes illustrate its potential as a stock for long-term investment and its inherent short-term risks?
 
-**Why**: This analysis offers insights into the performance of these tech giants, how product launches and global events have influenced their stock prices, and provides a historical perspective essential for predicting future trends.
+**Why**: This analysis seeks to understand the dual aspects of AAPL's stock performance: its potential for long-term growth and its susceptibility to short-term market fluctuations. Investigating these elements is essential for investors looking to balance growth opportunities with risk management in their portfolios.
 
-**Plan for Question 1**:
+**Plan for Question**:
 
 - **Variables Involved**:
-  - `stock_symbol` (character): To filter data for companies of interest.
-  - `date`, `close`, `volume` (double): For selecting date ranges and analyzing closing prices and trade volume.
+  - `date`, `adj_close`, `volume` (double): These variables are key for analyzing the stock's adjusted closing prices over time and daily trading volumes, essential for assessing market activity and price stability.
+  - `daily_return` (double): Calculated from price changes between consecutive days to gauge day-to-day volatility.
 
 - **Variables to be Created**:
-  percent_change: Calculated as ((current_price - previous_price) / previous_price) * 100. This metric helps in identifying daily volatility and trends.
-
+  - `price_change`: The difference in adjusted close price from one day to the next, providing insight into daily price movements.
+  - `volume_category`: A categorical variable dividing trading days into quartiles based on volume, used to analyze the impact of trading volume on price volatility.
 
 - **External Data**:
-  - Key event dates for each company.
-  - Historical market indices for comparative performance.
+  - Economic indicators that could affect stock performance (e.g., interest rate changes, GDP growth rates).
+  - Major product release dates and other significant corporate events at Apple.
 
 - **Analysis Plan**:
-  1. Filter data for targeted companies and date ranges.
-  2. Create time-series data for closing prices.
-  3. Calculate additional variables like percent changes.
-  4. Merge key event dates and market indices.
-  5. Use charts to visualize trends. Use suitable charts such as line chart or candle stick to illustrate the stock trends.
+  1. Compile and preprocess the data to include necessary variables and time frames.
+  2. Create a time-series plot to visualize long-term price trends and highlight any significant fluctuations.
+  3. Generate a histogram of daily returns to assess the frequency and range of daily price changes, using color coding to distinguish between gains and losses.
+  4. Construct a box plot to examine the relationship between trading volumes and daily price changes, categorizing days by volume intensity.
+  5. Integrate external data to correlate stock performance changes with specific economic events or corporate announcements.
+  6. Use detailed visualizations, such as scatter plots and box plots, to provide a comprehensive view of the stock's performance dynamics.
+
+By following this structured approach, the analysis will deliver valuable insights into AAPL's viability as a long-term investment and the risks involved in short-term trading, helping investors make informed decisions.
 
 ### Comparative Growth Analysis Since a Key Historical Event
 
