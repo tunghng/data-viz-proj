@@ -1,0 +1,493 @@
+---
+title: "Project1"
+output:
+  pdf_document: default
+  html_document: default
+date: "2024-04-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 2. How did the COVID-19 Pandemic affect the stock prices of Big Tech Companies?
+
+```{r cars}
+library(scales)
+library(lubridate)
+library(showtext)
+library(dplyr)
+library(ggplot2)
+font_add_google("Montserrat", "Montserrat")
+showtext_auto()
+
+
+```
+
+## 2.1. Introduction:
+
+-   We would like to answer this question because we observed a significant decrease in stock prices of major tech groups from late 2019 to mid-2020 which **overlapped with the dramatic expansion of COVID-19**. We'll check how stock prices changed during this time and see which companies were hit the hardest. By detecting less affected companies, we can focus on exploring their potential strategies dealt with the pandemic which saves time from general research. Therefore, we might be able to learn how to handle similar situations better in the future.
+### Data preparation:
+
+```{r}
+
+df <- read.csv("data/big_tech_stock_prices.csv")
+big_tech <- read.csv("data/big_tech_companies.csv")
+df$date <- as.Date(df$date)
+
+case <- read.csv("data/day_wise.csv")
+case <- rename(case , date = Date)
+case$date <- as.Date(case$date)
+
+walmart <- read.csv("data/WMT.csv")
+pfizer <- read.csv("data/pfizer.csv")
+
+walmart$date <- as.Date(walmart$Date)
+pfizer$date <- as.Date(pfizer$Date, format = "%m/%d/%Y")
+```
+
+```{r }
+
+ggplot(df,aes(y = close , x = date, group = 1)) +
+  geom_line () +
+  scale_x_date(labels = date_format("%Y"))+
+  facet_wrap(~ stock_symbol, scales = "free_y")
+```
+
+-   To answer that question, from the original dataset, we need the **close price**, which can be considered the primary price of the stock, from late 2019 to mid-2020.
+
+-   Moreover, to visualize the correlation between covid 19 spread and stock price, we use an external dataset, which contains **daily global statistics about covid 19 cases** from 22 Jan 2020 to 27 Jul 2020, published on Kaggle.
+
+-   Finally, to compare technology companies with other sectors, for example, groceries or medical products, we use 2 more datasets about the **historical stock price of Walmart and Pfizer** in the corresponding period.
+
+## 2.2 Approaches
+
+### Plot choice explanation: 
+
+-   **Firstly**, because COVID-19 affecting tech companies' stock prices is just our assumption, we have to qualify whether COVID-19 actually had that influence by plotting out stock prices and the global increase percentage of COVID-19 cases in the same plot. We use **bar plots**, which is good for describing the distribution of low-dimension data, to show the changes in stock price over time. Moreover, by visualizing with bar plot, we can easily see the change in stock price, compare it to past or future prices, and classify them at the same time ( We use different colors for *Increase, Decrease or No change* samples compared to the base price).
+
+-   The growth speed of COVID-19 cases will be visualized with a **line plot** because we want to reduce the plot's density ( lines save more space than bars) and emphasize the trend, which is the advantage of line charts, of COVID-19 spread.
+
+-   **Secondly,** after we verify the assumption and visualize some patterns, we want to clearly visualize which company suffers most from COVID-19. In other words, we want to visualize their loss *( loss = (expected price - actual price) \* volume) )* and rank them in descending order. We chose a bar plot for this purpose because this type of chart is optimized for rank illustration. We can see what companies did the best policies and their differences with tech giants who performed worse by comparing bars.
+
+-   **Finally**, different from the 2 tasks mentioned above, our final sub-question requires more data points to intuitively show the trend in the stock price of each tech company and 2 external representatives from the groceries/ medical fields. In this situation, a line chart would be an optimized consideration to reduce the density caused by a huge number of data points. Moreover, line charts can also show the trend over time better compared to other types of charts, so that we can clearly visualize changes in stock prices every single day. Besides that, because we want to see the date when sectors (tech, medical, groceries) swap their position in stock price rankings as well, we can easily point out those special days by intersections among lines.
+
+### Data pre-processing:
+
+-   Because we only crawled the data set of the most dramatic period of COVID-19 ( 1/22/2020 - 7/27/2020), we need to create subset of stock prices in that time.
+
+-   As I mentioned, bar plots are great to illustrate the distribution, however, it increase the density of the plot, makes it harder to observe differences in bars in the case where **there are too many bars**. Therefore, with the range of 6 months (nearly 200 days), I recalculate and **only leverage the average stock price for each week** to enhance the clarity of the plot while maintain the general distribution.
+
+-   Besides that, because **number of cases exponentially increased,** initial data points would be meaningless if we directly plot the raw data. Therefore, we try to consider the growth speed of the number of global COVID-19 cases, and represent this metric with a new variable: **percentage** *( percentage = number of new case / total of case \* 100 ).*
+
+-   If there had been no COVID-19, the stock price of companies would have increased or at least been unchanged, therefore, the decrease in stock price created a loss value for the companies. The more stock transactions, the higher loss they had to suffer.
+
+-   Therefore, we come up with a metrics to evaluate their losses: ***loss = (expected price - actual price) \* volume)***
+
+-   Because each company have different stock price, and we want to focus on the growth of them in the pandemic period, it would be **unfair if we directly plot the raw price.** Therefore, **percentage compared to the initial price would be our choice.**
+
+### Other techniques:
+
+-   Colors are used to show the comparison of price in that week with the based price ( in the week before COVID-19), so that we can see **how hard or how long COVID-19 badly affected the stock prices of each companies**.
+
+-   We added some **annotations for maxima points** to see whether the most dramatic COVID-19 expansion match with the lowest stock price in the time series.
+
+
+
+### Theme definition:
+
+```{r}
+theme_covid <- function(){
+      theme_minimal(base_family = "Montserrat") +
+      theme(
+
+      plot.title = element_text(hjust = 0.5, face = "bold", color = "#c83538"),
+      plot.subtitle = element_text(hjust = 0.5, face = "bold"), # This will center the subtitle
+      legend.position = "bottom",
+      axis.text.x = element_text(angle = 45,color = "#35426e", face = "bold", size = 12 ),
+      axis.text.y = element_text(color = "#35426e", face = "bold", size = 12),
+      panel.grid.major.x = element_blank(),  # Remove major x grid lines
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_line(color = "grey", size = 0.2),
+      panel.grid.minor.y = element_blank())
+}
+
+
+
+
+theme_covid2 <- function(){
+      theme_minimal(base_family = "Montserrat") +
+      theme(
+
+      plot.title = element_text(hjust = 0.5, face = "bold", color = "#c83538"),
+      plot.subtitle = element_text(hjust = 0.5, face = "bold"), # This will center the subtitle
+      axis.text.x = element_text(angle = 45,color = "#35426e", face = "bold", size = 12 ),
+      axis.text.y = element_text(color = "#35426e", face = "bold", size = 12),
+      panel.grid.major.x = element_blank(),  # Remove major x grid lines
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_line(color = "grey", size = 0.2),
+      panel.grid.minor.y = element_blank())
+  }
+```
+
+## 2.3 Analysis
+
+### 2.3.1. Verify the assumption "Did COVID-19 actually affect Tech Giants' stock prices?"
+
+```{r}
+case$new_case_percentage <- case$New.cases/case$Active*100
+weekly_covid <- case %>%
+  mutate(Week = lubridate::week(date)) %>%
+  group_by(Year = lubridate::year(date), Week) %>%
+  summarise(new_case_percentage = round(mean(new_case_percentage), digits = 2))
+
+
+create_covid_plot <- function(company_name){
+  full_name <- subset(big_tech, stock_symbol == company_name)
+  actual_name <- full_name$company
+  
+  company <- subset(df, stock_symbol == company_name)%>%
+        filter(date >= as.Date("2020-01-22") & date <= as.Date("2020-07-27"))
+  
+  
+  # Group data by week and calculate average close price per week
+  data_by_week <- company %>%
+  mutate(Week = lubridate::week(date)) %>%
+  group_by(Year = lubridate::year(date), Week) %>%
+  summarise(price = round(mean(close), digits = 4))
+  
+  first_row <- subset(data_by_week, Week == 4)
+
+  
+  
+  #Base price of the stock
+  
+  base_price <- first_row$price
+ 
+  data_by_week$percentage <-  data_by_week$price / base_price	
+  data_by_week$increase <- ifelse(data_by_week$percentage == 1 , "Before Covid",ifelse(data_by_week$percentage > 1, "Increase", "Decrease"))
+  
+      # Find the row with the highest value in the "percentage" column
+  max_percentage_row <- data_by_week[which.max(data_by_week$percentage), ]
+
+  # Find the row with the lowest value in the "percentage" column
+  min_percentage_row <- data_by_week[which.min(data_by_week$percentage), ]
+
+  data_by_week$increase <- ifelse(data_by_week$Week == max_percentage_row$Week , "Max",data_by_week$increase )
+  data_by_week$increase <- ifelse(data_by_week$Week == min_percentage_row$Week , "Min",data_by_week$increase )
+  
+
+  source_data <- inner_join(data_by_week, weekly_covid, by = "Week", "Year")
+  max_covid <- source_data[which.max(source_data$new_case_percentage), ]
+  
+  
+  months <- c( "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+  
+  plot <- ggplot(source_data, aes(x = Week, y = price, fill = increase)) +
+    geom_bar(stat = "identity",color = "black",alpha = 0.7)+
+    scale_fill_manual(values = c("Before Covid" = "yellow","Increase" = "palegreen1", "Decrease" = "lightpink1", "Min" = "indianred", "Max" = "springgreen4")) +
+    scale_y_continuous(
+      name = "Close Price",
+    
+    # Add a second axis and specify its features
+    sec.axis = sec_axis( trans=~./20, name="Pandemic Growth Percentage",breaks = seq(0,30,5))
+    ,limits = c(0, 600), breaks = seq(0,600, by = 50)) +
+    
+    labs(x = "Timeline", fill = "Compared to Before Covid 19", title =paste("Changes in", actual_name, "'s stock price vs Covid 19 spread speed"), 
+         subtitle = "Jan 2020 to July 2020") +
+      scale_x_continuous(breaks = seq(min(source_data$Week), max(source_data$Week), by = 1),
+                     labels = function(x) {
+                       month_indices <- as.integer((x - min(source_data$Week)) / 4) + 1
+                       ifelse(month_indices <= length(months) & (x - min(source_data$Week)) %% 5 == 0, months[month_indices], "")
+                     }) +
+    theme_minimal()
+
+  plot <- plot + 
+    geom_point(data = source_data, aes(x = Week, y = new_case_percentage*20), color = "firebrick2",size = 2) +
+    geom_line(data = source_data, aes(x = Week, y = new_case_percentage*20,group = 1), color = "firebrick2", size = 1)
+
+  
+  plot <- plot +
+  geom_segment(data = filter(source_data, Week == 12), aes(x = Week, xend = Week, y = 0, yend = new_case_percentage*20),
+               linetype = "dashed", color = "black")+
+  annotate(
+    'rect',
+    ymin = 275,
+    ymax =325,
+    xmin = 11.5,
+    xmax = 12.5,   
+    alpha = 0.5, 
+
+    fill = 'orange',
+    color = "black"
+   
+  )
+  
+  
+  plot <- plot +
+    annotate("text", x = max_percentage_row$Week, y = max_percentage_row$price + 30, label = max_percentage_row$price, size = 3)+
+    annotate("text", x = min_percentage_row$Week, y = min_percentage_row$price + 30, label = min_percentage_row$price, size = 3)+
+    annotate("text", x = 12, y = 375, label = subset(source_data, Week == 12)$new_case_percentage,fontface = "bold", size = 3, color = "red")
+  plot <- plot + theme_covid()
+
+    show(plot)
+  
+}
+create_covid_plot("AAPL")
+create_covid_plot("AMZN")
+create_covid_plot("NFLX")
+create_covid_plot("GOOGL")
+create_covid_plot("META")
+create_covid_plot("ORCL")
+create_covid_plot("TSLA")
+create_covid_plot("NVDA")
+create_covid_plot("IBM")
+create_covid_plot("MSFT")
+
+
+
+```
+
+### 2.3.2. Which company is most affected ( metric: expeceted loss value) ?
+
+```{r}
+loss_company <-data.frame(
+  company = "test" ,
+  loss_value = 0,
+  volume = 0
+)
+
+calculate_loss <- function(loss_data,company_name){
+  
+  #Set up for loss calcualtion
+  each_company <- subset(df, stock_symbol == company_name)
+  meta_data <- inner_join(each_company, case, by = "date")
+  base_price_data <- subset(meta_data, date == "2020-01-22")
+  base_price <- base_price_data$close
+
+  name <- subset(big_tech, stock_symbol == company_name)$company
+  loss <- 0
+  transactions <- 0
+  # Iterate through the dataset to add loss for stock price decreasing days 
+  for (i in 1:nrow(meta_data)) {
+    price <- meta_data$close[i]
+    volume <- meta_data$volume[i]
+  
+    if (price < base_price) {
+      loss <- loss + (base_price - price) * volume
+      transactions <- transactions + volume
+      }
+    }
+
+  new_company_loss <-data.frame(
+    company = company_name ,
+    loss_value = loss,
+    volume = volume
+    )
+  # Add the loss with corresponding name to the final data frame
+  loss_data <- rbind(loss_data, new_company_loss)
+
+  return(loss_data)
+}
+
+
+for (symbol in big_tech$stock_symbol) {
+    loss_company <- calculate_loss(loss_company,symbol)
+}
+sorted_df <- loss_company[order(loss_company$loss_value, decreasing = TRUE), ]
+print(sorted_df)
+
+for (symbol in loss_company$stock_symbol) {
+    loss_company <- calculate_loss(loss_company,symbol)
+}
+
+```
+
+```{r}
+
+breaks <- seq(0, 170, by = 10)
+breaks2 <- seq(0,250, by = 50)
+
+# Generate custom labels corresponding to the breaks
+custom_labels <- paste0(breaks, "b")
+
+
+loss_plot <- ggplot(subset(sorted_df, company != "test"), aes(x = reorder(company, -loss_value), y = loss_value,fill = company)) +
+    geom_bar(stat = "identity")+
+    geom_text(aes(label = round(loss_value/ 1000000000, digits = 2)), vjust = -0.5) +
+    scale_y_continuous(
+      limits = c(min(sorted_df$loss_value),max(sorted_df$loss_value)+30000000000),
+      breaks =  seq(min(sorted_df$loss_value), max(sorted_df$loss_value)+30000000000, by = 10000000000), labels = custom_labels)+
+    
+    labs(x = "Company Stock Symbol", y = "Total Loss Value in $", title ="Loss value in stock price of Big Tech Compnaies", 
+         subtitle = "Jan 2020 to July 2020")
+
+custom_2 <- paste0(breaks2, "m")
+
+loss_plot+theme_covid2()
+
+volume_plot<- ggplot(subset(sorted_df, company != "test"), aes(x = reorder(company, -loss_value), y = volume,fill = company)) +
+    geom_bar(stat = "identity")+
+    labs(x = "Company Stock Symbol", y = "Number of transactions", title ="Volume of low price transaction in Big Tech Companies", 
+         subtitle = "Jan 2020 to July 2020")+
+    scale_y_continuous(
+      limits = c(min(sorted_df$volume),max(sorted_df$volume)+50000000),
+      breaks =  seq(min(sorted_df$volume), max(sorted_df$volume)+50000000, by = 50000000), labels = custom_2)
+volume_plot +theme_covid2()
+
+```
+
+### 2.3.3. Compare tech giants stock price to giants in other fields ( Walmart: sale, Pfizer: medical)
+
+```{r}
+#Prepare external data, refine them the
+
+walmart <- subset(walmart, date >= "2020-01-22" & date <= "2020-07-24") 
+walmart$percentage <- round(walmart$Close / 116.10, digits = 2)
+walmart <- mutate(walmart, stock_symbol = "WALMT")
+pfizer$percentage <- round(pfizer$Close / 38.13093, digits = 2)
+pfizer <- mutate(pfizer, stock_symbol = "PFIZER")
+
+
+new_walmart <- data.frame(
+  stock_symbol = walmart$stock_symbol,
+  percentage = walmart$percentage,
+  date = walmart$date
+)
+new_pfizer <- data.frame(
+  stock_symbol = pfizer$stock_symbol,
+  percentage = pfizer$percentage,
+  date = pfizer$date
+  )
+
+#Function to calculate the percentage 
+compare_to_other <- function(company_name){
+  full_name <- subset(big_tech, stock_symbol == company_name)
+  actual_name <- full_name$company
+  
+  meta <- subset(df, date >= "2020-01-22" & date <= "2020-07-24" & stock_symbol == company_name)
+  price_20200122 <- meta %>%
+    filter(date == "2020-01-22") %>%
+    select(stock_symbol, close) %>%
+    rename(close_20200122 = close)
+
+  meta <- meta %>%
+    left_join(price_20200122, by = "stock_symbol") %>%
+    mutate(percentage = close / close_20200122)
+  
+  
+  new_meta <- data.frame(
+    stock_symbol = meta$stock_symbol,
+    percentage = meta$percentage,
+    date = meta$date
+  )
+  
+
+  combine_df <- rbind(new_meta,new_pfizer)
+  combine_df <- rbind(combine_df, new_walmart)
+
+
+  sec_plot <- ggplot(combine_df, aes(x =date, y = percentage,color = stock_symbol)) +
+      geom_line( )+
+      scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")+
+      labs(x = "Timeline", y = "Stock Price Percentage", color = "Company" ,title =paste("Comparision of stock price between", actual_name, "and other fields"), 
+         subtitle = "Jan 2020 to July 2020")
+  sec_plot + theme_covid()
+  
+}
+
+
+compare_to_other("AAPL")
+compare_to_other("AMZN")
+compare_to_other("NFLX")
+compare_to_other("GOOGL")
+compare_to_other("META")
+compare_to_other("ORCL")
+compare_to_other("NVDA")
+compare_to_other("IBM")
+compare_to_other("MSFT")
+
+
+
+```
+
+### We want to visualize Average Stock Prices of every tech companies, therefore we can observes the influence of COVID-19 on different sectors.
+
+```{r}
+  meta <- subset(df, date >= "2020-01-22" & date <= "2020-07-24")
+  price_20200122 <- meta %>%
+    filter(date == "2020-01-22") %>%
+    select(stock_symbol, close) %>%
+    rename(close_20200122 = close)
+
+  meta <- meta %>%
+    left_join(price_20200122, by = "stock_symbol") %>%
+    mutate(percentage = close / close_20200122)
+  
+  
+  new_meta <- data.frame(
+    stock_symbol = meta$stock_symbol,
+    percentage = meta$percentage,
+    date = meta$date
+  )
+  average_percentage <- meta %>%
+  group_by(date) %>%
+  summarise(percentage = mean(percentage, na.rm = TRUE))
+
+# Thêm cột "stock_symbol" mới với giá trị "AVERAGE"
+average_percentage <- average_percentage %>%
+  mutate(stock_symbol = "AVERAGE")
+
+x_y <- data.frame(
+    stock_symbol = average_percentage$stock_symbol,
+    percentage = average_percentage$percentage,
+    date = average_percentage$date
+  )
+
+
+  combine_df <- rbind(x_y,new_pfizer)
+  combine_df <- rbind(combine_df, new_walmart)
+
+
+  sec_plot <- ggplot(combine_df, aes(x =date, y = percentage,color = stock_symbol)) +
+      geom_line( )+
+      scale_x_date(date_breaks = "1 month", date_labels = "%b %Y")+
+      labs(x = "Timeline", y = "Stock Price Percentage", color = "Company" ,title =paste("Comparision between Tech Companies and others in stock price"), 
+         subtitle = "Jan 2020 to July 2020")
+  sec_plot + theme_covid()
+
+```
+
+## 2.4 Discussion
+
+-   From the set of plots that illustrates the change in stock price and COVID-19 spread speed over time, we can see that the stock price seems to be in inverse ratio to the growth of COVID-19 which the faster number of  COVID-19 cases increases, the faster stock prices decrease.
+
+-   Especially, as we can see from the vertical lines starting from the peak of COVID-19 growing speed, this point corresponds to the lowest stock price week in most companies. On the other hand, the highest prices appeared when COVID-19 spread more slowly in late July.
+
+-   This phenomenon is easily explained by the positive correlation between the pandemic and the global economic crisis when everyone tends to store food, medicines, etc. rather than investing in technology companies. They were willing to sell stocks in lower prices. 
+
+-   Moreover, based on the number of red and green bars for each company, we observed that entertainment ( Netflix),  young ( Tesla), or online shopping ( Amazon) companies suffer less damage than others. This could be thanks to adaptive and flexible policies from those companies or the high demand for online activities from customers in lockdown situations. Besides that, those bars also show that there are some companies (NVIDIA, Tesla, Netflix, Microsoft, Amazon) that recover sooner and better compared to the rest, this suggests that we should research those companies’ strategies dealing with COVID-19.
+
+    ```{r}
+    create_covid_plot("META")
+
+    ```
+
+-   From the second plot, the bar chart clearly shows that Netflix (0.61 billion \$) is the most successful company in the pandemic situation while Apple lost the most money ( 146.53 billion \$). Looking back to the previous visualization, we can see that the decrease in the price of Apple’s stock is not significant, however, the thing that made them lose much money is the volume of transactions. Although they lost only tens of bucks for each sell/buy transaction, their huge number of “low-price” transactions (\~121 mil, less than only Tesla) caused their significant loss.
+
+    ```{r}
+    loss_plot+theme_covid2()
+
+    volume_plot+ theme_covid2()
+    ```
+
+-   For the final chart, we can see that except for Netflix and Amazon, other tech companies tended to perform worse than Walmart and equal compared to Pfizer. Further more, in each chart, tech companies often reach the lowest points which show that those companies were damaged more badly compared to the medical or grocery sectors. This can be explained by the demand of people in the pandemic situation, they prefer food, drink, and necessaries which can be found at Walmart rather than technological products. Therefore, the sale of this company can be better, so that it can handle the damage better as well.
+
+-   However, the greater slope of the going up part of tech companies’ lines indicates that they recovered faster compared to Walmart and Pfizer after being hit by COVID-19. Some of them even reach a better stock price at the end. The average line plot shows the same story.
+
+```{r}
+compare_to_other("NVDA")
+compare_to_other("AMZN")
+compare_to_other("NFLX")
+```

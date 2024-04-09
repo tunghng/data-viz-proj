@@ -1,0 +1,15 @@
+---
+title: "Conclusion"
+output: pdf_document
+date: "2024-04-09"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Conclusion
+In conclusion, AAPL looks like it's growing steadily over the long haul, which is a good sign. But there's a lot of up-and-down action in the short term, especially because of how people feel about the market and the news. To make good choices, it's important to have a plan that takes into account how much trading is happening and which way prices are going.
+Considering both the big picture of growth and the day-to-day swings gives us a better idea of what investing in AAPL might be like. For folks okay with taking on some risk for the chance at bigger rewards, the long-term growth might be attractive, even with the short-term jumps. But if you're looking for something more steady, a stock with a smoother long-term trend and fewer big changes each day might be a better fit.
+By thinking about these things, investors can make smart decisions that match their comfort with risk and what they want to achieve with their investments, making sure they can handle the ups and downs of AAPL's stock.
+
+The Covid-19 pandemic had a significant impact on tech companies' stock prices, but its effects differed among these industry giants. Companies that belong to entertainment, online shopping, or other online services tended to fare better, thanks to increased demand for their products during lockdowns. While tech companies initially suffered more severe losses compared to industries like groceries or medical sectors, they also experienced a quicker recovery. As a result, their stock prices have rebounded stronger than those in other sectors post-pandemic.
