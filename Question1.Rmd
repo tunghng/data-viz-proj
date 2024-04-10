@@ -1,17 +1,27 @@
 ---
 title: "Question 1"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
+# include neccessary packages
 knitr::opts_chunk$set(echo = TRUE)
+#install.packages("dplyr")
 library(dplyr)
+#install.packages("ggplot2")
 library(ggplot2)
+#install.packages("tidyquant")
 library(tidyquant)
+#install.packages("lubridate")
 library(lubridate)
+#install.packages("plotly")
 library(plotly)
+#install.packages("gganimate")
+library(gganimate)
+#install.packages("gifski")
+library(gifski)
 ```
 
 ## Question 1
@@ -31,14 +41,14 @@ This question analyses the stock performane of 14 big tech companies in dataset 
 
 By exploring these aspects, investors and analysts can make informed decisions, strategically aligning their investment approaches with the opportunities and challenges presented by AAPL's presence in the market.
 ## Plotting the stock performance of 14 big tech companies
-```{r}
+```{r, include = FALSE}
 # Replace the path with the actual path to your CSV file
 file_path <- "data/big_tech_stock_prices.csv"
 # Read the CSV file into a data frame
 data <- read.csv(file_path)
 ```
 
-```{r}
+```{r, include = FALSE}
 
 stock_data <- data
 
@@ -81,7 +91,7 @@ p <- ggplot(
   theme(legend.position = "right")
 p
 ```
-```{r}
+```{r, include = FALSE}
 
 p <- p +
   transition_time(year) + 
@@ -99,13 +109,14 @@ anim_save("img/stock_over_time_animation.gif", animation = animation)
 ```
 ![](img/stock_over_time_animation.gif)
 
+
 **Key findings**
 From the animated data visualization, we can see that Apple possessed the biggest volume of traded stock in the market, this motivates us to look deeper into this company to anaylyze its success in the stock market. Another insight is that the volumes of stock traded decreased from 2019, which makes us think that this has something related to the COVID-19 and is the inspiration behind our second questions.
 
 ### Choose Stock to Analyze Based on Volume Traded
 
 The reason for us to choose 
-```{r}
+```{r, include=FALSE}
 # Replace the path with the actual path to your CSV file
 file_path <- "data/big_tech_stock_prices.csv"
 
@@ -136,7 +147,7 @@ top_3_stocks <- head(volume_sum$stock_symbol, 3)
 print(top_3_stocks)
 ```
 
-```{r}
+```{r, include = FALSE}
 # Loop through each top stock and save its data to a CSV file
 for (stock in top_3_stocks) {
   stock_data <- data %>%
@@ -145,7 +156,7 @@ for (stock in top_3_stocks) {
   
   # Construct file name and path
   file_name <- paste0(stock, "_stock_data.csv")
-  file_path <- file.path("./", file_name) # Replace with your actual directory path
+  file_path <- file.path("data/customed/", file_name) # Replace with your actual directory path
   
   # Save to CSV
   write.csv(stock_data, file_path, row.names = FALSE)
@@ -223,6 +234,7 @@ fig <- fig %>%  layout(title = "AAPL Stock Candlestick Chart",
                 c("autoScale2d", "toggleSpikelines", "zoomIn2d", "zoomOut2d", "select2d", "lasso2d"))
 fig 
 ```
+![Candle Stick Chart](img/candlestick.png)
 ### AAPL Adjusted Close Price Over Time
 
 ```{r}
@@ -285,6 +297,8 @@ fig <- fig %>%
 ))
 fig 
 ```
+
+![histogram](img/histogram.png)
 The Daily Returns graph provides a clear depiction of AAPL's volatility, characterized by fluctuations around a central tendency with occasional spikes. This volatility is a testament to the dynamic nature of the stock market and Apple's sensitivity to market sentiments and news.
 
 ### Statistical Highlights

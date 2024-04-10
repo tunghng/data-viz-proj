@@ -1,9 +1,9 @@
 ---
-title: "Project1"
+title: "Question 2"
 output:
   pdf_document: default
   html_document: default
-date: "2024-04-02"
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # 2. How did the COVID-19 Pandemic affect the stock prices of Big Tech Companies?
 
-```{r cars}
+```{r cars, include = FALSE}
 library(scales)
 library(lubridate)
 library(showtext)
@@ -21,7 +21,6 @@ library(ggplot2)
 font_add_google("Montserrat", "Montserrat")
 showtext_auto()
 
-
 ```
 
 ## 2.1. Introduction:
@@ -29,7 +28,7 @@ showtext_auto()
 -   We would like to answer this question because we observed a significant decrease in stock prices of major tech groups from late 2019 to mid-2020 which **overlapped with the dramatic expansion of COVID-19**. We'll check how stock prices changed during this time and see which companies were hit the hardest. By detecting less affected companies, we can focus on exploring their potential strategies dealt with the pandemic which saves time from general research. Therefore, we might be able to learn how to handle similar situations better in the future.
 ### Data preparation:
 
-```{r}
+```{r, include = FALSE}
 
 df <- read.csv("data/big_tech_stock_prices.csv")
 big_tech <- read.csv("data/big_tech_companies.csv")
@@ -46,7 +45,7 @@ walmart$date <- as.Date(walmart$Date)
 pfizer$date <- as.Date(pfizer$Date, format = "%m/%d/%Y")
 ```
 
-```{r }
+```{r}
 
 ggplot(df,aes(y = close , x = date, group = 1)) +
   geom_line () +
@@ -134,7 +133,7 @@ theme_covid2 <- function(){
 
 ### 2.3.1. Verify the assumption "Did COVID-19 actually affect Tech Giants' stock prices?"
 
-```{r}
+```{r, include = FALSE}
 case$new_case_percentage <- case$New.cases/case$Active*100
 weekly_covid <- case %>%
   mutate(Week = lubridate::week(date)) %>%
@@ -234,6 +233,8 @@ create_covid_plot <- function(company_name){
     show(plot)
   
 }
+```
+```{r}
 create_covid_plot("AAPL")
 create_covid_plot("AMZN")
 create_covid_plot("NFLX")
@@ -251,7 +252,7 @@ create_covid_plot("MSFT")
 
 ### 2.3.2. Which company is most affected ( metric: expeceted loss value) ?
 
-```{r}
+```{r, include = FALSE}
 loss_company <-data.frame(
   company = "test" ,
   loss_value = 0,
@@ -296,6 +297,8 @@ for (symbol in big_tech$stock_symbol) {
     loss_company <- calculate_loss(loss_company,symbol)
 }
 sorted_df <- loss_company[order(loss_company$loss_value, decreasing = TRUE), ]
+```
+```{r}
 print(sorted_df)
 
 for (symbol in loss_company$stock_symbol) {
@@ -304,7 +307,7 @@ for (symbol in loss_company$stock_symbol) {
 
 ```
 
-```{r}
+```{r, include = FALSE}
 
 breaks <- seq(0, 170, by = 10)
 breaks2 <- seq(0,250, by = 50)
@@ -324,8 +327,11 @@ loss_plot <- ggplot(subset(sorted_df, company != "test"), aes(x = reorder(compan
          subtitle = "Jan 2020 to July 2020")
 
 custom_2 <- paste0(breaks2, "m")
-
+```
+```{r}
 loss_plot+theme_covid2()
+```
+```{r, include = FALSE}
 
 volume_plot<- ggplot(subset(sorted_df, company != "test"), aes(x = reorder(company, -loss_value), y = volume,fill = company)) +
     geom_bar(stat = "identity")+
@@ -334,13 +340,15 @@ volume_plot<- ggplot(subset(sorted_df, company != "test"), aes(x = reorder(compa
     scale_y_continuous(
       limits = c(min(sorted_df$volume),max(sorted_df$volume)+50000000),
       breaks =  seq(min(sorted_df$volume), max(sorted_df$volume)+50000000, by = 50000000), labels = custom_2)
+```
+```{r}
 volume_plot +theme_covid2()
 
 ```
 
 ### 2.3.3. Compare tech giants stock price to giants in other fields ( Walmart: sale, Pfizer: medical)
 
-```{r}
+```{r, include = FALSE}
 #Prepare external data, refine them the
 
 walmart <- subset(walmart, date >= "2020-01-22" & date <= "2020-07-24") 
@@ -396,7 +404,9 @@ compare_to_other <- function(company_name){
   sec_plot + theme_covid()
   
 }
+```
 
+```{r}
 
 compare_to_other("AAPL")
 compare_to_other("AMZN")
@@ -414,7 +424,7 @@ compare_to_other("MSFT")
 
 ### We want to visualize Average Stock Prices of every tech companies, therefore we can observes the influence of COVID-19 on different sectors.
 
-```{r}
+```{r, include = FALSE}
   meta <- subset(df, date >= "2020-01-22" & date <= "2020-07-24")
   price_20200122 <- meta %>%
     filter(date == "2020-01-22") %>%
@@ -435,7 +445,7 @@ compare_to_other("MSFT")
   group_by(date) %>%
   summarise(percentage = mean(percentage, na.rm = TRUE))
 
-# Thêm cột "stock_symbol" mới với giá trị "AVERAGE"
+# Add column "stock_symbol" and value "AVERAGE"
 average_percentage <- average_percentage %>%
   mutate(stock_symbol = "AVERAGE")
 
@@ -448,7 +458,8 @@ x_y <- data.frame(
 
   combine_df <- rbind(x_y,new_pfizer)
   combine_df <- rbind(combine_df, new_walmart)
-
+```
+```{r}
 
   sec_plot <- ggplot(combine_df, aes(x =date, y = percentage,color = stock_symbol)) +
       geom_line( )+

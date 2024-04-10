@@ -2,8 +2,11 @@
 output:
   pdf_document: default
   html_document: default
+
 ---
 # Introduction 
+
+Git hub [https://github.com/tunghng/data-viz-proj/tree/main](https://github.com/tunghng/data-viz-proj/tree/main)
 
 Financial data, especially stock data, is crucial to investors and analysts because it provides valuable insights into an industry’s performance and market trends. Effective data visualization can help these stakeholders regconize key patterns in stock performance, thus help them making more informed decisions and understand more about the market behaviour. For that reason, out team project attempt to effectively visualize financial data of mainly about big tech companies from the year 2010 to 2023. This project includes four main datasets, which we will briefly introduce:
 
